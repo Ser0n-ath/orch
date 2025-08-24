@@ -1,0 +1,30 @@
+{
+  "name": "my-stagehand-app",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx index.ts",
+    "startctl": "tsx ctl.ts",
+    "server": "tsx server.ts",
+    "test-api": "tsx test-client.ts",
+    "postinstall": "playwright install"
+  },
+  "dependencies": {
+    "@browserbasehq/stagehand": "^2.4.3",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node-fetch": "^2.6.13",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "node-fetch": "^3.3.2",
+    "playwright": "^1.55.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "tsx": "^4.19.2",
+    "typescript": "^5.0.0"
+  }
+}

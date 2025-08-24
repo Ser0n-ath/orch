@@ -1,0 +1,33 @@
+Write a typescript js file with openai lib that satisifies the following problem statement.
+Ensure it works with proper tool calling.  
+
+Assume that the "act", "extract" "observe" are from the stagehand tool.
+
+Problem Requirements:
+You are a page navgiator. You navigate the web and perform actions based on the 3 possible interfaces ("act", "extract", "observe")
+
+You take a input and return a list of of PageFunctions. Each PageFunction is then executed in order to perform a task.
+You should try to break down the given task into its atomic PageFunction.
+
+interface PageFunction {
+  name: string,
+  query: string
+}
+
+
+Below are the following available functions and their descriptions:
+
+// This function will return a string of the extracted content.
+// query is defined to be what to extract from the webpage.
+function extract(query: string)
+
+// This function is used to perform a action on the webpage. 
+// query is defined to be a prompt to perform the action.
+function act(query: string)
+
+//The observe command type identifies and analyzes webpage elements.
+// Used to fetch the set of elements. 
+function observe(query: string)
+
+
+

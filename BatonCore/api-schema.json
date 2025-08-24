@@ -1,0 +1,325 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BatonCore API",
+    "description": "AI-powered web automation API that converts natural language prompts into structured web automation tasks",
+    "version": "1.0.0",
+    "contact": {
+      "name": "BatonCore",
+      "url": "https://github.com/Orchestra2-0/BatonCore"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Check if the API server is running and healthy",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "Server is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "message": "BatonCore API is running"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/execute": {
+      "post": {
+        "summary": "Execute Web Automation",
+        "description": "Execute a web automation task based on a natural language prompt",
+        "operationId": "executeAutomation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteRequest"
+              },
+              "examples": {
+                "google_search": {
+                  "summary": "Google Search Example",
+                  "value": {
+                    "prompt": "Go to Google and search for OpenAI"
+                  }
+                },
+                "news_extraction": {
+                  "summary": "News Extraction Example",
+                  "value": {
+                    "prompt": "Go to CNN and get the top news story"
+                  }
+                },
+                "wikipedia_research": {
+                  "summary": "Wikipedia Research Example",
+                  "value": {
+                    "prompt": "Visit Wikipedia and find a random article about science"
+                  }
+                },
+                "ecommerce": {
+                  "summary": "E-commerce Example",
+                  "value": {
+                    "prompt": "Go to Amazon and search for wireless headphones"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Automation executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecuteSuccessResponse"
+                },
+                "example": {
+                  "success": true,
+                  "prompt": "Go to Google and search for OpenAI",
+                  "result": {
+                    "success": true,
+                    "plan": [
+                      {
+                        "name": "act",
+                        "query": "google.com"
+                      },
+                      {
+                        "name": "observe",
+                        "query": "look for the search box on the Google homepage"
+                      },
+                      {
+                        "name": "act",
+                        "query": "click the search box"
+                      },
+                      {
+                        "name": "act",
+                        "query": "type OpenAI in the search box"
+                      },
+                      {
+                        "name": "act",
+                        "query": "press Enter to search"
+                      },
+                      {
+                        "name": "observe",
+                        "query": "wait until the search results page loads"
+                      }
+                    ],
+                    "outputs": [
+                      "NAVIGATED(https://google.com)",
+                      "Observed: look for the search box on the Google homepage",
+                      "ACTION_OK(\"click the search box\")",
+                      "ACTION_OK(\"type OpenAI in the search box\")",
+                      "ACTION_OK(\"press Enter to search\")",
+                      "Waited for condition: wait until the search results page loads"
+                    ],
+                    "screenshots": [
+                      "debug_screenshots/01-*.jpg",
+                      "debug_screenshots/02-*.jpg",
+                      "debug_screenshots/03-*.jpg",
+                      "debug_screenshots/04-*.jpg",
+                      "debug_screenshots/05-*.jpg",
+                      "debug_screenshots/06-*.jpg"
+                    ],
+                    "output": "Search results for OpenAI displayed successfully"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid or missing prompt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecuteErrorResponse"
+                },
+                "example": {
+                  "success": false,
+                  "error": "Missing or invalid prompt. Please provide a string prompt in the request body.",
+                  "prompt": null
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error - automation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecuteErrorResponse"
+                },
+                "example": {
+                  "success": false,
+                  "error": "OPENAI_API_KEY environment variable is required",
+                  "prompt": "Go to Google and search for OpenAI"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "required": ["status", "message"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["ok"],
+            "description": "Health status of the server"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable status message"
+          }
+        }
+      },
+      "ExecuteRequest": {
+        "type": "object",
+        "required": ["prompt"],
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000,
+            "description": "Natural language description of the web automation task to perform",
+            "examples": [
+              "Go to Google and search for OpenAI",
+              "Visit Wikipedia and find a random article",
+              "Go to CNN and get the top news story",
+              "Check the weather in New York",
+              "Go to Hacker News and get the top 3 stories"
+            ]
+          }
+        }
+      },
+      "ExecuteSuccessResponse": {
+        "type": "object",
+        "required": ["success", "prompt", "result"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [true],
+            "description": "Indicates the request was processed successfully"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "The original prompt that was executed"
+          },
+          "result": {
+            "$ref": "#/components/schemas/AutomationResult"
+          }
+        }
+      },
+      "ExecuteErrorResponse": {
+        "type": "object",
+        "required": ["success", "error"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [false],
+            "description": "Indicates the request failed"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          },
+          "prompt": {
+            "type": "string",
+            "nullable": true,
+            "description": "The original prompt that was attempted (if provided)"
+          }
+        }
+      },
+      "AutomationResult": {
+        "type": "object",
+        "required": ["success", "plan", "outputs", "screenshots"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the automation task completed successfully"
+          },
+          "plan": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PageFunction"
+            },
+            "description": "Array of automation steps that were planned and executed"
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of execution results for each step in the plan"
+          },
+          "screenshots": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of screenshot file paths captured during execution"
+          },
+          "output": {
+            "type": "string",
+            "nullable": true,
+            "description": "Final meaningful output extracted from the automation task (e.g., extracted text, search results, etc.)"
+          },
+          "error": {
+            "type": "string",
+            "nullable": true,
+            "description": "Error message if the automation failed"
+          }
+        }
+      },
+      "PageFunction": {
+        "type": "object",
+        "required": ["name", "query"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": ["act", "observe", "extract"],
+            "description": "Type of automation step"
+          },
+          "query": {
+            "type": "string",
+            "description": "Natural language instruction for this step"
+          }
+        }
+      },
+      "CommandName": {
+        "type": "string",
+        "enum": ["observe", "extract", "act"],
+        "description": "Available automation command types"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Server health and status endpoints"
+    },
+    {
+      "name": "Automation",
+      "description": "Web automation execution endpoints"
+    }
+  ]
+}
